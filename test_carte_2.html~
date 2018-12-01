@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/img/favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Paper Dashboard by Creative Tim</title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+    <!-- Bootstrap core CSS     -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Animation library for notifications   -->
+    <link href="assets/css/animate.min.css" rel="stylesheet"/>
+    <!--  Paper Dashboard core CSS    -->
+    <link href="assets/css/paper-dashboard.css" rel="stylesheet"/>
+    <!--  Fonts and icons     -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+    <link href="assets/css/themify-icons.css" rel="stylesheet">
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link href="./assets/fonts/opensans.css" rel="stylesheet">
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.49.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.49.0/mapbox-gl.css' rel='stylesheet' />
+    <script src="./lib/PapaParse-4.6.0/papaparse.js"></script> 
+    <style>
+        body {
+        margin: 0;
+        padding: 0;
+        }
+        #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        }
+        .marker {
+        background-image: url('./img/mapbox-icon.png');
+        background-size: cover;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        }
+        .mapboxgl-popup {
+        max-width: 200px;
+        }
+        .mapboxgl-popup-content {
+        text-align: center;
+        font-family: 'Open Sans', sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+
+
+<style>
+.map-overlay {
+    position: absolute;
+    width: 200px;
+    top: 0;
+    left: 0;
+    padding: 10px;
+}
+
+.map-overlay .map-overlay-inner {
+    background-color: #fff;
+    box-shadow:0 1px 2px rgba(0, 0, 0, 0.10);
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.map-overlay-inner fieldset {
+    border: none;
+    padding: 0;
+    margin: 0 0 10px;
+}
+
+.map-overlay-inner fieldset:last-child {
+    margin: 0;
+}
+</style>
+
+
+
+
+<div class="wrapper">
+	<div class="sidebar" data-background-color="white" data-active-color="danger">
+
+    	<div class="sidebar-wrapper">
+            <div class="logo">
+                <a href="http://www.creative-tim.com" class="simple-text">
+                    Cédric et Thierno
+                </a>
+            </div>
+
+            <ul class="nav">
+                <li>
+                    <a href="#">
+                        <i class="ti-user"></i>
+                        <p>User Profile</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="test_stats_2.html">
+                        <i class="ti-bar-chart-alt"></i>
+                        <p>Graphs</p>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="test_carte_2.html">
+                        <i class="ti-map"></i>
+                        <p>Maps</p>
+                    </a>
+                </li>
+            </ul>
+    	</div>
+    </div>
+        <div class="main-panel">
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="card card-map">
+                        <div class="header">
+                            <h4 class="title">Google Maps</h4>
+                        </div>
+                        <div class="map">
+                        
+                        
+                            <div id='map'></div>
+                            
+                            <div class='map-overlay top'>
+                                <div class='map-overlay-inner'>
+                                    <fieldset>
+                                        <label>Type de données</label>
+                                        <select id='select_type_layer' name='type' onchange="update_map_color(document.getElementById('range_date').value);">
+                                            <option value='temp'>Temperatures</option>
+                                            <option value='pluie'>Precipitations</option>
+                                            <option value='neige'>Chutes de neige</option>
+                                        </select>
+                                    </fieldset>
+                                    <fieldset>
+                                        <label>Echelle (max au min)</label>
+                                        <div id="color_scale">
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="container-fluid">
+                        <input type="range" id="range_date" min="0" max="72" onchange="update_tab_date(this.value);update_map_color(this.value);" oninput="range_to_date(this.value);update_tab_date(this.value)">
+                        <label id='label_date'></label>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="content table-responsive table-full-width">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <th>Pays</th>
+                                                <th>Temperature</th>
+                                                <th>Precipitation</th>
+                                                <th>Chute de neige</th>
+                                            </thead>
+                                            <tbody id='table-body'>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<!--   Core JS Files   -->
+<script src="assets/js/jquery.min.js" type="text/javascript"></script>
+<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
+<!--  Checkbox, Radio & Switch Plugins -->
+<script src="assets/js/bootstrap-checkbox-radio.js"></script>
+<!--  Charts Plugin -->
+<script src="assets/js/chartist.min.js"></script>
+<!--  Notifications Plugin    -->
+<script src="assets/js/bootstrap-notify.js"></script>
+<!--  Google Maps Plugin    -->
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+<script src="./data/Pays.json"></script>
+<script>
+
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgb(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+
+function update_map(color_country){
+    mapboxgl.accessToken = 'pk.eyJ1IjoidGhpZWRvMTYiLCJhIjoiY2ptdzF2ejIxMGZ1ZzN3cXZpbGF4MW5hMCJ9.Tnwnv4MHIuA5bkA9swtC7Q';
+    
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v9',
+        center: [5, 39],
+        zoom: 3
+    });
+    
+    map.on('load', function () {
+	    
+	    for (var key in all_json_polygon)
+	    {
+		    var value = all_json_polygon[key];
+		    
+		    var color = '#ddd';
+		    var opacity = 0.7;
+            
+            if(key in color_country){
+                color = color_country[key]['color'];
+                opacity = color_country[key]['opacity'];
+            };
+			    
+		    map.addLayer({
+			    'id': key,
+			    'type': 'fill',
+			    'source': {
+				    'type': 'geojson',
+				    'data': {
+					    'type': 'Feature',
+					    'geometry': {
+						    'type': 'Polygon',
+						    'coordinates': value
+					    }
+				    }
+			    },
+			    'layout': {
+				    'visibility': 'visible'
+				    },
+			    'paint': {
+				    'fill-color': color,
+				    'fill-opacity': opacity,
+			    }
+		    });
+	    };
+    });
+    
+    
+    
+    Papa.parse("./data/Weather_Station_Locations.csv", {
+        download: true,
+        header: true,
+        dynamicTyping: true,
+        complete: function(results) {
+            create_gson(results.data);
+        },
+    });
+    
+    function create_gson(data) {
+        var i;
+        var geojson = "";
+        var temp;
+        var l = [];
+        for (i = 0; i < data.length; i++) {
+            var temp = {
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [data[i]['Longitude'], data[i]['Latitude']]
+                },
+                properties: {
+                    title: data[i]['NAME'],
+                    description: data[i]['WBAN']
+                }
+            };
+    
+            if (data[i]['Latitude'] < 90 && data[i]['Latitude'] > -90 && data[i]['Longitude'] < 90 && data[i]['Longitude'] > -90) {
+                l.push(temp);
+            };
+        };
+    
+        // console.log(l);
+    
+        l.forEach(function(marker) {
+    
+            // create a HTML element for each feature
+            var el = document.createElement('div');
+            el.className = 'marker';
+    
+            // make a marker for each feature and add to the map
+            new mapboxgl.Marker(el)
+                .setLngLat(marker.geometry.coordinates)
+                .setPopup(new mapboxgl.Popup({
+                        offset: 25
+                    }) // add popups
+                    .setHTML('<h3>' + marker.properties.title + '</h3><p>' + marker.properties.description + '</p>'))
+                .addTo(map);
+            /*
+            el.addEventListener('click', () => { 
+                alert(marker.properties.description);
+            });
+            */
+    
+        });
+    }
+};
+    
+
+
+    const stations_importantes = {
+    'Icelande':[16101, 16202, 16201],
+    'Royaume-Uni':[15027],
+    'France':[34022, 34018, 34012],
+    'Corse':[34002, 34005, 34017, 34003, 34013],
+    'Sardaigne':[33014, 33019],
+    'Sicile':[33111, 33117],
+    'Italie':[34147, 34139, 34150, 34113, 34101, 341050, 34123, 34109, 34111],
+    'Atlantique':[13201],
+    'Bermudes':[13601],
+    'Canada':[15605, 15604],
+    'Maroc':[13005, 13002, 13013, 13007],
+    'Algerie':[33031, 33023, 33013, 33044],
+    'Tunisie':[33003, 33109, 33121],
+    'Libye':[33123],
+    'Grece':[33206],
+    'Turquie':[33307],
+    'Egypte':[32301, 33303, 33205],
+    'Irak':[33305, 33405, 33401]
+    }
+    
+    
+    $("body").css("cursor", "progress");
+    
+    Papa.parse("./data/Summary_of_Weather.csv", {
+        download: true,
+        header: true,
+        dynamicTyping: true,
+        complete: function(results) {
+            all_data_weather = results.data;
+            
+            document.getElementById('range_date').onchange();
+        },
+    });
+    
+    
+    function update_map_color(nb){
+    
+    
+    
+    
+    
+    
+        var date_selected = new Date('September 1, 1939');
+        date_selected.setMonth( date_selected.getMonth() + parseInt(nb) );
+        
+        let mm = date_selected.getMonth() + 1;
+        let yyyy = date_selected.getFullYear();
+        
+        date = (yyyy + "-" + mm + "-");
+    
+    
+    
+    
+    
+    
+        var color_country = {};
+        for(var key in stations_importantes){
+            var res = extract(all_data_weather, stations_importantes[key], date);
+            color_country[key] =  {'color' : '#ddd', 'opacity': 0.7};
+            
+            var temp  = '???';
+            var pluie = '???';
+            var neige = '???';
+            if(res['nb'] != 0){
+                var couleur = 0;
+                
+                if(document.getElementById('select_type_layer').value == 'pluie'){
+                    couleur = ( (res['Precip']/res['nb']) )/10;
+                    couleur = couleur;
+                    
+                    function getColor(value){
+                        //value from 0 to 1
+                        var sat=(30 + (value*70)).toString(10);
+                        var lum=(25 + (value*30)).toString(10);
+                        return ["hsl(240,", sat ,"%,", lum ,"%)"].join("");
+                    };
+                }else if(document.getElementById('select_type_layer').value == 'neige'){
+                    couleur = ( res['Snowfall']/res['nb'] )/5;
+                    
+                    function getColor(value){
+                        //value from 0 to 1
+                        var hue=(120+(value*120)).toString(10);
+                        var lum=(50+(value*50)).toString(10);
+                        return ["hsl(",hue,",100%,", lum ,"%)"].join("");
+                    };
+                }else{
+                    couleur = ( (res['MeanTemp']/res['nb']) + 15)/50;
+                    couleur = 1 - couleur;
+                    
+                    function getColor(value){
+                        //value from 0 to 1
+                        var hue=(value*240).toString(10);
+                        return ["hsl(",hue,",100%,50%)"].join("");
+                    };
+                };
+                                
+                color_country[key] = {'color' : getColor(couleur), 'opacity': 0.8};
+            };
+        };
+        
+        document.getElementById('color_scale').innerHTML = "";
+        for(var i = 0; i <= 1 ; i += 0.05){
+            var d=document.createElement('div');
+            d.style.width="30px";
+            d.style.height="3px";
+            d.style.backgroundColor=getColor(i);
+            
+            document.getElementById('color_scale').appendChild(d);
+        }
+        
+        update_map(color_country);
+    };
+    
+    
+    function update_tab_complete(date){
+        $("body").css("cursor", "progress");
+    
+        var tableRef = document.getElementById('table-body');
+        tableRef.innerHTML = "";
+    
+        for(var key in stations_importantes){
+            var res = extract(all_data_weather, stations_importantes[key], date);
+            
+            var temp  = '???';
+            var pluie = '???';
+            var neige = '???';
+            if(res['nb'] != 0){
+                temp  = Math.floor(res['MeanTemp']/res['nb']) + '°C';
+                pluie = Math.floor(res['Precip']/res['nb']) + ' mm';
+                if(!res['PrecipOK'] && res['Precip'] == 0){
+                    pluie = '???';
+                };
+                neige = Math.floor(res['Snowfall']/res['nb']) + ' mm';
+                var newRow = tableRef.insertRow(tableRef.rows.length);
+                newRow.innerHTML = '<tr><td>'+key+'</td><td>'+temp+'</td><td>'+pluie+'</td><td>'+neige+'</td></tr>';
+            };
+        };
+    
+        $("body").css("cursor", "default");
+    };
+    
+    
+    function extract(data, stations, date) {
+        var res = {'MeanTemp':0, 'Precip':0, 'PrecipOK':true, 'Snowfall':0, 'nb':0};
+        for (var i = 0; i < data.length; i++) {
+        
+            if ( data[i]['Date'] != undefined && data[i]['Date'].startsWith(date) && stations.includes(data[i]['STA']) ) {
+                res['nb']       += 1;
+                res['MeanTemp'] += data[i]['MeanTemp'];
+                if(data[i]['Precip'] != 'T'){
+                    res['Precip']   += data[i]['Precip'];
+                }else{
+                    res['PrecipOK'] = false;
+                };
+                res['Snowfall'] += data[i]['Snowfall'];
+            };
+            
+        };
+        
+        return res;
+    
+        // console.log(l);
+    }
+    
+    
+    // MaJ du slider
+    function range_to_date(nb){
+    
+        nb = parseInt(nb);
+        var date_selected = new Date('September 1, 1939');
+        
+        date_selected.setMonth(date_selected.getMonth()+nb);
+        
+        const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+        
+        let mm = monthNames[date_selected.getMonth()]; 
+        let yyyy = date_selected.getFullYear();
+        
+        document.getElementById('label_date').innerHTML = `Date : ${mm} ${yyyy}`;
+    }
+    
+    
+    function update_tab_date(nb){
+        var date_selected = new Date('September 1, 1939');
+        date_selected.setMonth( date_selected.getMonth() + parseInt(nb) );
+        
+        let mm = date_selected.getMonth() + 1;
+        let yyyy = date_selected.getFullYear();
+        
+        update_tab_complete(yyyy + "-" + mm + "-");
+    }
+    
+    
+    document.getElementById('range_date').value = 57;
+    document.getElementById('range_date').oninput();
+    
+    
+    
+</script>
+</html>
+
