@@ -16,7 +16,7 @@
     <link href="./assets/fonts/font-awesome.min.css" rel="stylesheet">
     <link href='./assets/fonts/muli.css' rel='stylesheet' type='text/css'>
     <link href="./assets/css/themify-icons.css" rel="stylesheet">
-    <link href='./lib/mapbox.css' rel='stylesheet' />
+    <link href='./mapbox.css' rel='stylesheet' />
     <link href="./assets/fonts/opensans.css" rel="stylesheet">
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css' rel='stylesheet' />
@@ -127,16 +127,6 @@
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
 <script src="./data/Pays.json"></script>
 <script>
-   function componentToHex(c) {
-       var hex = c.toString(16);
-       return hex.length == 1 ? "0" + hex : hex;
-   }
-
-   function rgb(r, g, b) {
-       return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-   }
-
-
    function update_map(color_country) {
        mapboxgl.accessToken = 'pk.eyJ1IjoidGhpZWRvMTYiLCJhIjoiY2ptdzF2ejIxMGZ1ZzN3cXZpbGF4MW5hMCJ9.Tnwnv4MHIuA5bkA9swtC7Q';
 
